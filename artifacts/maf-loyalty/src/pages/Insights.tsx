@@ -1,15 +1,38 @@
 import { AppLayout } from "@/components/layout/AppLayout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { useGetAnalytics } from "@workspace/api-client-react"
 import { Spinner } from "@/components/ui/spinner"
 import { Sparkles, BrainCircuit, Target, Zap } from "lucide-react"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, Area, XAxis, YAxis } from "recharts"
 
 export default function Insights() {
-  const { data: analytics, isLoading } = useGetAnalytics()
+  const { data: analytics, isLoading, isError, error, refetch } = useGetAnalytics()
 
   if (isLoading) return <AppLayout><div className="h-[60vh] flex items-center justify-center"><Spinner size="lg"/></div></AppLayout>
-  if (!analytics) return null
+
+  if (isError || !analytics) {
+    const message =
+      error instanceof Error ? error.message : "Could not load analytics."
+    return (
+      <AppLayout>
+        <div className="max-w-lg mx-auto mt-16 space-y-4">
+          <Alert variant="destructive">
+            <AlertTitle>Insights could not load</AlertTitle>
+            <AlertDescription className="space-y-2">
+              <p>{message}</p>
+              <p className="text-muted-foreground">
+                Configure <code className="text-xs">DATABASE_URL</code> on the server and ensure
+                the schema is pushed and seeded.
+              </p>
+            </AlertDescription>
+          </Alert>
+          <Button variant="outline" onClick={() => void refetch()}>Retry</Button>
+        </div>
+      </AppLayout>
+    )
+  }
 
   // Mocking trend data for the visual since API only provides aggregate
   const trendData = [

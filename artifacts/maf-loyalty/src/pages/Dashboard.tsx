@@ -1,5 +1,7 @@
 import { AppLayout } from "@/components/layout/AppLayout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { useGetAnalytics } from "@workspace/api-client-react"
 import { Spinner } from "@/components/ui/spinner"
 import { Users, CreditCard, Sparkles, TrendingUp } from "lucide-react"
@@ -14,7 +16,7 @@ const TIER_COLORS = {
 }
 
 export default function Dashboard() {
-  const { data: analytics, isLoading } = useGetAnalytics()
+  const { data: analytics, isLoading, isError, error, refetch } = useGetAnalytics()
 
   if (isLoading) {
     return (
@@ -26,7 +28,32 @@ export default function Dashboard() {
     )
   }
 
-  if (!analytics) return null
+  if (isError || !analytics) {
+    const message =
+      error instanceof Error ? error.message : "Could not load analytics."
+    return (
+      <AppLayout>
+        <div className="max-w-lg mx-auto mt-16 space-y-4">
+          <Alert variant="destructive">
+            <AlertTitle>Dashboard could not load</AlertTitle>
+            <AlertDescription className="space-y-2">
+              <p>{message}</p>
+              <p className="text-muted-foreground">
+                On Vercel, set <code className="text-xs">DATABASE_URL</code> to your
+                Postgres URL, redeploy, then run{" "}
+                <code className="text-xs">pnpm --filter @workspace/db run push</code> and{" "}
+                <code className="text-xs">pnpm --filter @workspace/scripts run seed-maf</code>{" "}
+                against that database.
+              </p>
+            </AlertDescription>
+          </Alert>
+          <Button variant="outline" onClick={() => void refetch()}>
+            Retry
+          </Button>
+        </div>
+      </AppLayout>
+    )
+  }
 
   const tierData = [
     { name: "Silver", value: analytics.tierDistribution.silver, color: TIER_COLORS.silver },
