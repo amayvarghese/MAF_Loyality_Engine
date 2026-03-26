@@ -1,8 +1,11 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "./schema";
+import { resolveDatabaseUrl } from "./connection-string";
 
 const { Pool } = pg;
+
+export { resolveDatabaseUrl } from "./connection-string";
 
 type Schema = typeof schema;
 type Db = ReturnType<typeof drizzle<Schema>>;
@@ -29,13 +32,13 @@ function needsSsl(connectionString: string): boolean {
 }
 
 function getOrCreatePool(): pg.Pool {
-  if (!process.env.DATABASE_URL) {
+  const connectionString = resolveDatabaseUrl();
+  if (!connectionString) {
     throw new Error(
-      "DATABASE_URL must be set. Did you forget to provision a database?",
+      "No database URL: set DATABASE_URL (or POSTGRES_URL / NEON_DATABASE_URL / …).",
     );
   }
   if (!_pool) {
-    const connectionString = process.env.DATABASE_URL;
     const max = Number(process.env.PG_POOL_MAX ?? (process.env.VERCEL ? "5" : "10"));
     _pool = new Pool({
       connectionString,

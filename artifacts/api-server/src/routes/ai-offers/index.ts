@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { db } from "@workspace/db";
+import { db, resolveDatabaseUrl } from "@workspace/db";
 import {
   customersTable,
   brandsTable,
@@ -195,12 +195,12 @@ The aiReason field should explain in 1 sentence (not addressed to the customer) 
 });
 
 router.get("/analytics", async (req, res) => {
-  if (!process.env.DATABASE_URL) {
+  if (!resolveDatabaseUrl()) {
     return res.status(503).json({
       error: "Database not configured",
       title: "Database not configured",
       detail:
-        "Add DATABASE_URL in Vercel → Settings → Environment Variables (Production), redeploy, then run DB push and seed.",
+        "Vercel → Settings → Environment Variables (Production): add DATABASE_URL or POSTGRES_URL (Neon/Supabase/Vercel Postgres connection string). Save, redeploy, then locally run pnpm --filter @workspace/db run push and pnpm --filter @workspace/scripts run seed-maf with the same URL.",
     });
   }
 
