@@ -26,46 +26,46 @@ export default function Insights() {
     { name: 'Redeemed', value: analytics.weeklyOfferStats.redeemed },
     { name: 'Ignored', value: analytics.weeklyOfferStats.generated - analytics.weeklyOfferStats.redeemed }
   ]
-  const COLORS = ['#10B981', '#334155']
+  const COLORS = ['#10B981', '#9CA3AF']
 
   return (
     <AppLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-4xl font-display font-bold text-white mb-2 flex items-center gap-3">
-            <BrainCircuit className="w-8 h-8 text-indigo-400" /> AI Insights Engine
+          <h1 className="text-4xl font-display font-bold text-foreground mb-2 flex items-center gap-3">
+            <BrainCircuit className="w-8 h-8 text-blue-500" /> AI Insights Engine
           </h1>
           <p className="text-muted-foreground">Real-time performance of the cross-brand personalization models</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-gradient-to-br from-indigo-500/10 to-transparent border-indigo-500/20">
+          <Card className="bg-gradient-to-br from-blue-500/5 to-transparent border-blue-500/10">
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-indigo-500/20 rounded-lg"><Sparkles className="w-6 h-6 text-indigo-400"/></div>
+                <div className="p-3 bg-blue-500/10 rounded-2xl"><Sparkles className="w-6 h-6 text-blue-500"/></div>
               </div>
               <p className="text-muted-foreground text-sm font-medium mb-1">Offers Generated (7d)</p>
-              <h3 className="text-4xl font-bold text-white">{analytics.weeklyOfferStats.generated}</h3>
+              <h3 className="text-4xl font-bold text-foreground">{analytics.weeklyOfferStats.generated}</h3>
             </CardContent>
           </Card>
           
-          <Card className="bg-gradient-to-br from-emerald-500/10 to-transparent border-emerald-500/20">
+          <Card className="bg-gradient-to-br from-emerald-500/5 to-transparent border-emerald-500/10">
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-emerald-500/20 rounded-lg"><Target className="w-6 h-6 text-emerald-400"/></div>
+                <div className="p-3 bg-emerald-500/10 rounded-2xl"><Target className="w-6 h-6 text-emerald-500"/></div>
               </div>
               <p className="text-muted-foreground text-sm font-medium mb-1">Offers Redeemed (7d)</p>
-              <h3 className="text-4xl font-bold text-white">{analytics.weeklyOfferStats.redeemed}</h3>
+              <h3 className="text-4xl font-bold text-foreground">{analytics.weeklyOfferStats.redeemed}</h3>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
+          <Card className="bg-gradient-to-br from-primary/5 to-transparent border-primary/10">
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-primary/20 rounded-lg"><Zap className="w-6 h-6 text-primary"/></div>
+                <div className="p-3 bg-primary/10 rounded-2xl"><Zap className="w-6 h-6 text-primary"/></div>
               </div>
               <p className="text-muted-foreground text-sm font-medium mb-1">AI Conversion Rate</p>
-              <h3 className="text-4xl font-bold text-white">{(analytics.weeklyOfferStats.redemptionRate * 100).toFixed(1)}%</h3>
+              <h3 className="text-4xl font-bold text-foreground">{(analytics.weeklyOfferStats.redemptionRate * 100).toFixed(1)}%</h3>
             </CardContent>
           </Card>
         </div>
@@ -81,19 +81,19 @@ export default function Insights() {
                   <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorGen" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
                       </linearGradient>
                       <linearGradient id="colorRed" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#10B981" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <XAxis dataKey="name" stroke="#8892b0" tickLine={false} axisLine={false} />
-                    <YAxis stroke="#8892b0" tickLine={false} axisLine={false} />
-                    <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
-                    <Area type="monotone" dataKey="generated" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorGen)" />
-                    <Area type="monotone" dataKey="redeemed" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRed)" />
+                    <XAxis dataKey="name" stroke="#6E6E73" tickLine={false} axisLine={false} />
+                    <YAxis stroke="#6E6E73" tickLine={false} axisLine={false} />
+                    <Tooltip contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }} />
+                    <Area type="monotone" dataKey="generated" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorGen)" />
+                    <Area type="monotone" dataKey="redeemed" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorRed)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -122,7 +122,7 @@ export default function Insights() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                    <Tooltip contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }} />
                     <Legend verticalAlign="bottom" height={36} />
                   </PieChart>
                 </ResponsiveContainer>

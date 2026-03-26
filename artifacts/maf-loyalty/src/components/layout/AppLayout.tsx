@@ -4,16 +4,12 @@ import { motion } from "framer-motion"
 
 export function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background text-foreground flex relative overflow-hidden">
+    <div className="min-h-screen bg-[#F5F5F7] text-foreground flex relative overflow-hidden">
       {/* Abstract Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <img 
-          src={`${import.meta.env.BASE_URL}images/luxury-bg.png`} 
-          alt="Background" 
-          className="w-full h-full object-cover opacity-40 mix-blend-screen"
-        />
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-500/10 blur-[120px]" />
+        <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-rose-200/20 blur-[100px]" />
+        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[40%] rounded-full bg-[#B8963E]/15 blur-[120px]" />
+        <div className="absolute bottom-[-20%] left-[20%] w-[50%] h-[50%] rounded-full bg-blue-200/20 blur-[120px]" />
       </div>
 
       {/* Sidebar */}

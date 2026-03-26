@@ -14,20 +14,14 @@ export function Sidebar() {
   const [location] = useLocation()
 
   return (
-    <aside className="w-72 bg-card/40 backdrop-blur-2xl border-r border-white/10 flex flex-col h-screen sticky top-0">
-      <div className="p-8 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent p-[1px] shadow-lg shadow-primary/20">
-          <div className="w-full h-full bg-background rounded-[11px] flex items-center justify-center overflow-hidden">
-             <img src={`${import.meta.env.BASE_URL}images/maf-logo.png`} alt="MAF Logo" className="w-8 h-8 object-contain" />
-          </div>
-        </div>
-        <div>
-          <h1 className="font-display font-bold text-xl text-white tracking-wide">MAF<span className="text-primary">Loyalty</span></h1>
-          <p className="text-xs text-muted-foreground uppercase tracking-widest">Enterprise</p>
+    <aside className="w-72 bg-white/80 backdrop-blur-2xl border-r border-black/5 flex flex-col h-screen sticky top-0">
+      <div className="p-6">
+        <div className="bg-gradient-to-r from-[#2C2C2E] to-[#3A3020] rounded-2xl p-4 flex items-center justify-center">
+          <img src={`${import.meta.env.BASE_URL}images/maf-logo.png`} alt="MAF Logo" className="h-10 w-auto object-contain" />
         </div>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-4 py-2 space-y-1">
         {navItems.map((item) => {
           const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href))
           return (
@@ -35,14 +29,14 @@ export function Sidebar() {
               key={item.href} 
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-300 group relative overflow-hidden",
+                "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 relative",
                 isActive 
                   ? "text-primary bg-primary/10" 
-                  : "text-muted-foreground hover:text-white hover:bg-white/5"
+                  : "text-[#1D1D1F] hover:bg-black/5"
               )}
             >
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full shadow-[0_0_10px_rgba(212,175,55,0.8)]" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
               )}
               <item.icon className={cn("w-5 h-5 transition-transform duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
               {item.label}
@@ -51,7 +45,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-6 border-t border-white/10">
+      <div className="p-6">
         <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors font-medium">
           <LogOut className="w-5 h-5" />
           Sign Out

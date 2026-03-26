@@ -7,10 +7,10 @@ import { formatNumber, formatCurrency } from "@/lib/utils"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Cell as PieCell, Legend } from "recharts"
 
 const TIER_COLORS = {
-  silver: "#C0C0C0",
-  gold: "#FFD700",
-  platinum: "#E5E4E2",
-  diamond: "#B9F2FF"
+  silver: "#9CA3AF",
+  gold: "#B8963E",
+  platinum: "#4B5563",
+  diamond: "#06B6D4"
 }
 
 export default function Dashboard() {
@@ -39,7 +39,7 @@ export default function Dashboard() {
     <AppLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-4xl font-display font-bold text-white mb-2">Executive Overview</h1>
+          <h1 className="text-4xl font-display font-bold text-foreground mb-2">Executive Overview</h1>
           <p className="text-muted-foreground">Cross-brand loyalty performance & AI impact</p>
         </div>
 
@@ -48,39 +48,39 @@ export default function Dashboard() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
                   <Users className="w-6 h-6 text-primary" />
                 </div>
                 <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5">+12%</Badge>
               </div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Total Network Customers</p>
-              <h3 className="text-3xl font-display font-bold text-white">{formatNumber(analytics.totalCustomers)}</h3>
+              <h3 className="text-3xl font-display font-bold text-foreground">{formatNumber(analytics.totalCustomers)}</h3>
             </CardContent>
           </Card>
           
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                  <CreditCard className="w-6 h-6 text-blue-400" />
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                  <CreditCard className="w-6 h-6 text-blue-500" />
                 </div>
               </div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Network Transactions</p>
-              <h3 className="text-3xl font-display font-bold text-white">{formatNumber(analytics.totalTransactions)}</h3>
+              <h3 className="text-3xl font-display font-bold text-foreground">{formatNumber(analytics.totalTransactions)}</h3>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-purple-400" />
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-purple-500" />
                 </div>
-                <Badge variant="outline" className="border-purple-500/30 text-purple-400 bg-purple-500/5">AI Driven</Badge>
+                <Badge variant="outline" className="border-purple-500/30 text-purple-500 bg-purple-500/5">AI Driven</Badge>
               </div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Offer Redemption Rate</p>
-              <h3 className="text-3xl font-display font-bold text-white">
-                {(analytics.weeklyOfferStats.redemptionRate * 100).toFixed(1)}%
+              <h3 className="text-3xl font-display font-bold text-foreground">
+                {analytics.weeklyOfferStats.redemptionRate.toFixed(1)}%
               </h3>
             </CardContent>
           </Card>
@@ -88,12 +88,12 @@ export default function Dashboard() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-emerald-400" />
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-emerald-500" />
                 </div>
               </div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Points Issued</p>
-              <h3 className="text-3xl font-display font-bold text-white">{formatNumber(analytics.totalPointsIssued)}</h3>
+              <h3 className="text-3xl font-display font-bold text-foreground">{formatNumber(analytics.totalPointsIssued)}</h3>
             </CardContent>
           </Card>
         </div>
@@ -110,21 +110,21 @@ export default function Dashboard() {
                   <BarChart data={analytics.topBrands} margin={{ top: 10, right: 10, left: 20, bottom: 20 }}>
                     <XAxis 
                       dataKey="brandName" 
-                      stroke="#8892b0" 
+                      stroke="#6E6E73" 
                       fontSize={12} 
                       tickLine={false} 
                       axisLine={false} 
                     />
                     <YAxis 
-                      stroke="#8892b0" 
+                      stroke="#6E6E73" 
                       fontSize={12} 
                       tickLine={false} 
                       axisLine={false} 
                       tickFormatter={(value) => `${value / 1000}k`}
                     />
                     <Tooltip 
-                      cursor={{fill: 'rgba(255,255,255,0.05)'}}
-                      contentStyle={{ backgroundColor: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
+                      cursor={{fill: 'rgba(0,0,0,0.04)'}}
+                      contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '12px', color: '#1D1D1F', backdropFilter: 'blur(10px)' }}
                       formatter={(value: number) => [formatCurrency(value), "Revenue"]}
                     />
                     <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
@@ -134,8 +134,8 @@ export default function Dashboard() {
                     </Bar>
                     <defs>
                       <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#D4AF37" stopOpacity={1} />
-                        <stop offset="100%" stopColor="#D4AF37" stopOpacity={0.6} />
+                        <stop offset="0%" stopColor="#B8963E" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#B8963E" stopOpacity={0.6} />
                       </linearGradient>
                     </defs>
                   </BarChart>
@@ -167,8 +167,8 @@ export default function Dashboard() {
                       ))}
                     </Pie>
                     <Tooltip 
-                      contentStyle={{ backgroundColor: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                      itemStyle={{ color: '#fff' }}
+                      contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}
+                      itemStyle={{ color: '#1D1D1F' }}
                     />
                     <Legend verticalAlign="bottom" height={36} iconType="circle" />
                   </PieChart>

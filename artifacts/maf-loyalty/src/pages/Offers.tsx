@@ -30,7 +30,7 @@ export default function Offers() {
     <AppLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-4xl font-display font-bold text-white mb-2">Campaign Offers</h1>
+          <h1 className="text-4xl font-display font-bold text-foreground mb-2">Campaign Offers</h1>
           <p className="text-muted-foreground">Monitor and manage AI-generated loyalty offers across the network</p>
         </div>
 
@@ -38,8 +38,8 @@ export default function Offers() {
           {offers?.map(offer => (
             <Card key={offer.id} className="flex flex-col relative overflow-hidden group">
               {offer.status === 'redeemed' && (
-                <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] z-10 flex items-center justify-center">
-                  <div className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-full font-semibold flex items-center gap-2">
+                <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
+                  <div className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-4 py-2 rounded-full font-semibold flex items-center gap-2 shadow-sm bg-white/80 backdrop-blur-md">
                     <CheckCircle2 className="w-5 h-5" /> Redeemed
                   </div>
                 </div>
@@ -47,30 +47,31 @@ export default function Offers() {
               
               <CardContent className="p-6 flex-1 flex flex-col">
                 <div className="flex justify-between items-start mb-4">
-                  <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10">
+                  <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5">
                     {offer.brandName}
                   </Badge>
-                  <span className="text-2xl font-bold text-white">{offer.discountPercent}% OFF</span>
+                  <span className="text-2xl font-bold text-foreground">{offer.discountPercent}% OFF</span>
                 </div>
                 
-                <h3 className="text-xl font-bold text-white mb-2">{offer.title}</h3>
+                <h3 className="text-xl font-bold text-foreground mb-2">{offer.title}</h3>
                 <p className="text-muted-foreground text-sm flex-1">{offer.description}</p>
                 
                 {offer.aiReason && (
-                  <div className="mt-4 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-300 flex items-start gap-2">
-                    <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-indigo-400" />
+                  <div className="mt-4 p-3 rounded-xl bg-purple-500/5 border border-purple-500/10 text-xs text-purple-700 flex items-start gap-2">
+                    <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-purple-500" />
                     <span className="italic">{offer.aiReason}</span>
                   </div>
                 )}
 
-                <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+                <div className="mt-6 pt-4 border-t border-black/5 flex items-center justify-between">
                   <div className="text-sm">
                     <span className="text-muted-foreground">Valid till: </span>
-                    <span className="text-white">{new Date(offer.validUntil).toLocaleDateString()}</span>
+                    <span className="text-foreground font-medium">{new Date(offer.validUntil).toLocaleDateString()}</span>
                   </div>
                   <Button 
                     variant="default" 
                     size="sm"
+                    className="bg-foreground text-white hover:bg-black/80 rounded-full px-6 shadow-sm"
                     disabled={offer.status !== 'active' || redeemOffer.isPending}
                     onClick={() => redeemOffer.mutate({ id: offer.id })}
                   >

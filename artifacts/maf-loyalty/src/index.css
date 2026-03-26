@@ -36,53 +36,53 @@
 }
 
 :root {
-  /* Luxury Dark Theme */
-  --background: 226 60% 7%;      /* Deep Navy #070B19 */
-  --foreground: 45 20% 95%;      /* Off white #F6F5F2 */
+  /* Apple Glassmorphism Light Theme */
+  --background: 240 5% 96%;      /* #F5F5F7 */
+  --foreground: 240 3% 11%;      /* #1D1D1F */
   
-  --card: 225 50% 12%;           /* Lighter Navy #0F172A */
-  --card-foreground: 45 20% 95%;
+  --card: 0 0% 100%;             /* White */
+  --card-foreground: 240 3% 11%; /* #1D1D1F */
   
-  --popover: 225 50% 12%;
-  --popover-foreground: 45 20% 95%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 3% 11%;
   
-  --primary: 46 65% 52%;         /* Rich Gold #D4AF37 */
-  --primary-foreground: 226 60% 7%; /* Navy Text */
+  --primary: 43 47% 47%;         /* MAF Gold #B8963E */
+  --primary-foreground: 0 0% 100%; /* White Text */
   
-  --secondary: 225 40% 20%;      /* Muted Navy */
-  --secondary-foreground: 45 20% 95%;
+  --secondary: 0 0% 96%;         /* F5F5F7 */
+  --secondary-foreground: 240 3% 11%;
   
-  --muted: 225 40% 18%;
-  --muted-foreground: 225 20% 70%;
+  --muted: 0 0% 96%;             /* F5F5F7 */
+  --muted-foreground: 240 2% 45%;/* #6E6E73 */
   
-  --accent: 45 68% 81%;          /* Pale Gold / Champagne */
-  --accent-foreground: 226 60% 7%;
+  --accent: 43 47% 47%;          /* MAF Gold */
+  --accent-foreground: 0 0% 100%;
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 225 30% 25%;
-  --input: 225 30% 25%;
-  --ring: 46 65% 52%;
+  --border: 0 0% 0%;             
+  --input: 0 0% 0%;
+  --ring: 43 47% 47%;
 
   /* Tier Colors */
-  --tier-silver: 0 0% 75%;       /* #C0C0C0 */
-  --tier-gold: 51 100% 50%;      /* #FFD700 */
-  --tier-platinum: 30 4% 89%;    /* #E5E4E2 */
-  --tier-diamond: 191 100% 86%;  /* #B9F2FF */
+  --tier-silver: 0 0% 60%;       
+  --tier-gold: 43 47% 47%;      
+  --tier-platinum: 240 5% 45%;    
+  --tier-diamond: 191 70% 50%;  
 
-  --radius: 0.75rem;
+  --radius: 1rem;
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-black/10;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/30 selection:text-primary;
+    @apply bg-[#F5F5F7] text-foreground font-sans antialiased selection:bg-primary/30 selection:text-primary;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight;
+    @apply font-display tracking-tight text-[#1D1D1F];
   }
 }
 
@@ -92,8 +92,8 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-background;
+  @apply bg-transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-border rounded-full hover:bg-muted-foreground transition-colors;
+  @apply bg-black/10 rounded-full hover:bg-black/20 transition-colors;
 }
