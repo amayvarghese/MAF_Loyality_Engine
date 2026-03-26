@@ -8,12 +8,17 @@ import {
 } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { GenerateOffersBody } from "@workspace/api-zod";
+import {
+  getOfferChatClient,
+  offerChatCompletionParams,
+} from "../../lib/offer-generation-chat";
 
 const router: IRouter = Router();
 
 router.post("/generate-offers", async (req, res) => {
   try {
-    const { openai } = await import("@workspace/integrations-openai-ai-server");
+    const { client: openai, model: chatModel, provider } =
+      await getOfferChatClient();
 
     const { customerId } = GenerateOffersBody.parse(req.body);
 
@@ -124,8 +129,8 @@ The aiReason field should explain in 1 sentence (not addressed to the customer) 
 
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5.2",
-      max_completion_tokens: 2048,
+      model: chatModel,
+      ...offerChatCompletionParams(provider),
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -150,7 +155,14 @@ The aiReason field should explain in 1 sentence (not addressed to the customer) 
       const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
       parsed = JSON.parse(jsonMatch ? jsonMatch[0] : rawContent);
     } catch {
-      return res.status(500).json({ error: "AI response parsing failed" });
+      return res.status(500).json({
+        error: "AI response parsing failed",
+        title: "AI response parsing failed",
+        detail:
+          provider === "groq"
+            ? "The model did not return valid JSON. Try again, or set GROQ_CHAT_MODEL (e.g. llama-3.1-8b-instant)."
+            : "The model did not return valid JSON. Try again, or set OPENAI_CHAT_MODEL to gpt-4o-mini if your key has limited model access.",
+      });
     }
 
     const validUntil = new Date();
@@ -187,10 +199,35 @@ The aiReason field should explain in 1 sentence (not addressed to the customer) 
       });
     }
 
+    if (insertedOffers.length === 0) {
+      return res.status(500).json({
+        error: "No offers saved",
+        title: "No offers saved",
+        detail:
+          "The model returned no valid offers for your brands. Check that each offer.brandId matches a real brand id.",
+      });
+    }
+
     return res.json({ offers: insertedOffers, summary: parsed.summary });
   } catch (err) {
     req.log.error({ err }, "Failed to generate offers");
-    return res.status(500).json({ error: "Failed to generate offers" });
+    const detail = err instanceof Error ? err.message : String(err);
+    const usingGroq = Boolean(process.env.GROQ_API_KEY?.trim());
+    const hint =
+      detail.includes("AI_INTEGRATIONS_OPENAI") || detail.includes("API_KEY")
+        ? usingGroq
+          ? "If using Groq: set GROQ_API_KEY (and optional GROQ_BASE_URL https://api.groq.com/openai/v1). Otherwise set AI_INTEGRATIONS_OPENAI_BASE_URL and AI_INTEGRATIONS_OPENAI_API_KEY, then redeploy."
+          : "Set GROQ_API_KEY for Groq Cloud, or AI_INTEGRATIONS_OPENAI_BASE_URL (e.g. https://api.openai.com/v1) and AI_INTEGRATIONS_OPENAI_API_KEY in Vercel → Environment Variables, then redeploy."
+        : /model/i.test(detail) && /not found|invalid|does not exist/i.test(detail)
+          ? usingGroq
+            ? `Set GROQ_CHAT_MODEL to a Groq model id (e.g. llama-3.3-70b-versatile). Current: ${process.env.GROQ_CHAT_MODEL || "llama-3.3-70b-versatile"}.`
+            : `Set OPENAI_CHAT_MODEL to a model your key supports (e.g. gpt-4o or gpt-4o-mini). Current: ${process.env.OPENAI_CHAT_MODEL || "gpt-4o"}.`
+          : undefined;
+    return res.status(500).json({
+      error: "Failed to generate offers",
+      title: "Failed to generate offers",
+      detail: hint ? `${detail} — ${hint}` : detail,
+    });
   }
 });
 

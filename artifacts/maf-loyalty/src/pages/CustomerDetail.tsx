@@ -19,7 +19,9 @@ export default function CustomerDetail() {
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
-  const { data: customer, isLoading } = useGetCustomer(id, { query: { enabled: !!id } })
+  const { data: customer, isLoading } = useGetCustomer(id, {
+    query: { enabled: !!id, queryKey: getGetCustomerQueryKey(id) },
+  })
   
   const generateOffers = useGenerateOffers({
     mutation: {
@@ -29,8 +31,14 @@ export default function CustomerDetail() {
         queryClient.invalidateQueries({ queryKey: getListOffersQueryKey() })
       },
       onError: (err) => {
-        toast({ title: "Error", description: "Failed to generate offers.", variant: "destructive" })
-      }
+        const description =
+          err instanceof Error ? err.message : "Failed to generate offers.";
+        toast({
+          title: "Could not generate offers",
+          description,
+          variant: "destructive",
+        });
+      },
     }
   })
 
