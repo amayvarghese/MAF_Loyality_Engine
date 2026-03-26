@@ -3,7 +3,9 @@
   "installCommand": "pnpm install",
   "buildCommand": "pnpm run vercel-build",
   "framework": null,
+  "outputDirectory": "public",
   "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "functions": {
