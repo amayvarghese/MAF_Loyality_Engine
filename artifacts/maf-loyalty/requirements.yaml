@@ -1,0 +1,20 @@
+packages:
+  "recharts": "Premium data visualization for cross-brand analytics"
+  "framer-motion": "Smooth page transitions and interactive elements for luxury feel"
+  "date-fns": "Elegant date formatting for transactions and offers"
+  "clsx": "Class merging for UI components"
+  "tailwind-merge": "Tailwind class conflict resolution"
+  "@radix-ui/react-slot": "For accessible button components"
+  "@radix-ui/react-dialog": "For modal popups and AI offer generation dialogs"
+
+images:
+  - path: "artifacts/maf-loyalty/public/images/maf-logo.png"
+    description: "Minimalist luxury corporate logo for a brand named MAF, geometric 'M', gold foil effect on completely transparent background"
+    aspect_ratio: "1:1"
+  - path: "artifacts/maf-loyalty/public/images/luxury-bg.png"
+    description: "Deep dark navy blue abstract gradient background with subtle gold dust, soft light streaks, and premium elegant glassmorphism texture"
+    aspect_ratio: "16:9"
+
+notes:
+  - Using pre-generated OpenAPI hooks from @workspace/api-client-react
+  - Defaulting to a luxury dark theme (navy and gold) to reflect MAF enterprise brand

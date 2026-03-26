@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "MAF Loyalty Engine"
+version = "1.0.0"
+id = "artifacts/maf-loyalty"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21235
+
+[services.development]
+run = "pnpm --filter @workspace/maf-loyalty run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/maf-loyalty", "run", "build" ]
+publicDir = "artifacts/maf-loyalty/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21235"
+BASE_PATH = "/"

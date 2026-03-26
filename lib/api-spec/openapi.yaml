@@ -1,15 +1,24 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: MAF Loyalty Engine API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: customers
+    description: Customer profile operations
+  - name: brands
+    description: MAF brand operations
+  - name: transactions
+    description: Transaction and points operations
+  - name: offers
+    description: Personalized offer operations
+  - name: ai
+    description: AI offer generation operations
 paths:
   /healthz:
     get:
@@ -24,6 +33,192 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /customers:
+    get:
+      operationId: listCustomers
+      tags: [customers]
+      summary: List all customers
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      operationId: createCustomer
+      tags: [customers]
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCustomerBody"
+      responses:
+        "201":
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+
+  /customers/{id}:
+    get:
+      operationId: getCustomer
+      tags: [customers]
+      summary: Get customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerWithDetails"
+        "404":
+          description: Customer not found
+
+  /brands:
+    get:
+      operationId: listBrands
+      tags: [brands]
+      summary: List all MAF brands
+      responses:
+        "200":
+          description: List of brands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Brand"
+
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [transactions]
+      summary: List transactions
+      parameters:
+        - name: customerId
+          in: query
+          schema:
+            type: integer
+        - name: brandId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+    post:
+      operationId: createTransaction
+      tags: [transactions]
+      summary: Record a new transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransactionBody"
+      responses:
+        "201":
+          description: Transaction recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+
+  /offers:
+    get:
+      operationId: listOffers
+      tags: [offers]
+      summary: List personalized offers
+      parameters:
+        - name: customerId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, expired, redeemed]
+      responses:
+        "200":
+          description: List of offers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Offer"
+
+  /offers/{id}/redeem:
+    post:
+      operationId: redeemOffer
+      tags: [offers]
+      summary: Redeem an offer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Offer redeemed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+
+  /ai/generate-offers:
+    post:
+      operationId: generateOffers
+      tags: [ai]
+      summary: AI-generate personalized weekly offers for a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateOffersBody"
+      responses:
+        "200":
+          description: Generated offers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateOffersResponse"
+
+  /ai/analytics:
+    get:
+      operationId: getAnalytics
+      tags: [ai]
+      summary: Get cross-brand analytics and insights
+      responses:
+        "200":
+          description: Analytics data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +229,268 @@ components:
       required:
         - status
 
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        tier:
+          type: string
+          enum: [silver, gold, platinum, diamond]
+        totalPoints:
+          type: integer
+        joinedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - tier
+        - totalPoints
+        - joinedAt
+
+    CustomerWithDetails:
+      allOf:
+        - $ref: "#/components/schemas/Customer"
+        - type: object
+          properties:
+            transactions:
+              type: array
+              items:
+                $ref: "#/components/schemas/Transaction"
+            offers:
+              type: array
+              items:
+                $ref: "#/components/schemas/Offer"
+            brandSpend:
+              type: array
+              items:
+                $ref: "#/components/schemas/BrandSpend"
+
+    CreateCustomerBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        tier:
+          type: string
+          enum: [silver, gold, platinum, diamond]
+      required:
+        - name
+        - email
+
+    Brand:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        logoColor:
+          type: string
+        description:
+          type: string
+      required:
+        - id
+        - name
+        - category
+
+    BrandSpend:
+      type: object
+      properties:
+        brandId:
+          type: integer
+        brandName:
+          type: string
+        totalSpend:
+          type: number
+        totalPoints:
+          type: integer
+        visitCount:
+          type: integer
+      required:
+        - brandId
+        - brandName
+        - totalSpend
+        - totalPoints
+        - visitCount
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        brandId:
+          type: integer
+        brandName:
+          type: string
+        amount:
+          type: number
+        pointsEarned:
+          type: integer
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - customerId
+        - brandId
+        - amount
+        - pointsEarned
+        - createdAt
+
+    CreateTransactionBody:
+      type: object
+      properties:
+        customerId:
+          type: integer
+        brandId:
+          type: integer
+        amount:
+          type: number
+        description:
+          type: string
+      required:
+        - customerId
+        - brandId
+        - amount
+
+    Offer:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        brandId:
+          type: integer
+        brandName:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        discountPercent:
+          type: number
+        pointsBonus:
+          type: integer
+        validUntil:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [active, expired, redeemed]
+        aiReason:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - customerId
+        - brandId
+        - title
+        - description
+        - discountPercent
+        - validUntil
+        - status
+        - createdAt
+
+    GenerateOffersBody:
+      type: object
+      properties:
+        customerId:
+          type: integer
+      required:
+        - customerId
+
+    GenerateOffersResponse:
+      type: object
+      properties:
+        offers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Offer"
+        summary:
+          type: string
+      required:
+        - offers
+        - summary
+
+    AnalyticsResponse:
+      type: object
+      properties:
+        totalCustomers:
+          type: integer
+        totalTransactions:
+          type: integer
+        totalPointsIssued:
+          type: integer
+        topBrands:
+          type: array
+          items:
+            type: object
+            properties:
+              brandName:
+                type: string
+              revenue:
+                type: number
+              customerCount:
+                type: integer
+            required:
+              - brandName
+              - revenue
+              - customerCount
+        tierDistribution:
+          type: object
+          properties:
+            silver:
+              type: integer
+            gold:
+              type: integer
+            platinum:
+              type: integer
+            diamond:
+              type: integer
+          required:
+            - silver
+            - gold
+            - platinum
+            - diamond
+        weeklyOfferStats:
+          type: object
+          properties:
+            generated:
+              type: integer
+            redeemed:
+              type: integer
+            redemptionRate:
+              type: number
+          required:
+            - generated
+            - redeemed
+            - redemptionRate
+      required:
+        - totalCustomers
+        - totalTransactions
+        - totalPointsIssued
+        - topBrands
+        - tierDistribution
+        - weeklyOfferStats
