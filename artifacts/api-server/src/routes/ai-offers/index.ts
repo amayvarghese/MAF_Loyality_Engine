@@ -195,6 +195,15 @@ The aiReason field should explain in 1 sentence (not addressed to the customer) 
 });
 
 router.get("/analytics", async (req, res) => {
+  if (!process.env.DATABASE_URL) {
+    return res.status(503).json({
+      error: "Database not configured",
+      title: "Database not configured",
+      detail:
+        "Add DATABASE_URL in Vercel → Settings → Environment Variables (Production), redeploy, then run DB push and seed.",
+    });
+  }
+
   try {
     const [customerCount] = await db
       .select({ count: sql<number>`count(*)` })
@@ -266,7 +275,20 @@ router.get("/analytics", async (req, res) => {
     });
   } catch (err) {
     req.log.error({ err }, "Failed to get analytics");
-    return res.status(500).json({ error: "Failed to get analytics" });
+    const detail = err instanceof Error ? err.message : String(err);
+    const hint =
+      detail.includes("password") || detail.includes("authentication failed")
+        ? "Check DATABASE_URL user/password."
+        : detail.includes("does not exist") && detail.includes("relation")
+          ? 'Run `pnpm --filter @workspace/db run push` and `pnpm --filter @workspace/scripts run seed-maf` against this database.'
+          : detail.includes("timeout") || detail.includes("ECONNREFUSED")
+            ? "Database host refused connection or timed out. Check URL, SSL, and IP allowlists."
+            : undefined;
+    return res.status(500).json({
+      error: "Failed to get analytics",
+      title: "Failed to get analytics",
+      detail: hint ? `${detail} — ${hint}` : detail,
+    });
   }
 });
 

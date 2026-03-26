@@ -10,6 +10,24 @@ type Db = ReturnType<typeof drizzle<Schema>>;
 let _pool: pg.Pool | undefined;
 let _db: Db | undefined;
 
+function needsSsl(connectionString: string): boolean {
+  if (process.env.PGSSLMODE === "disable") return false;
+  const u = connectionString.toLowerCase();
+  // Hosted Postgres almost always requires TLS from serverless (Vercel).
+  return (
+    process.env.PGSSLMODE === "require" ||
+    process.env.VERCEL === "1" ||
+    u.includes("sslmode=require") ||
+    u.includes("neon.tech") ||
+    u.includes("supabase.co") ||
+    u.includes("pooler.supabase.com") ||
+    u.includes("vercel-storage.com") ||
+    u.includes("amazonaws.com") ||
+    u.includes("railway.app") ||
+    u.includes("render.com")
+  );
+}
+
 function getOrCreatePool(): pg.Pool {
   if (!process.env.DATABASE_URL) {
     throw new Error(
@@ -17,7 +35,15 @@ function getOrCreatePool(): pg.Pool {
     );
   }
   if (!_pool) {
-    _pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const connectionString = process.env.DATABASE_URL;
+    const max = Number(process.env.PG_POOL_MAX ?? (process.env.VERCEL ? "5" : "10"));
+    _pool = new Pool({
+      connectionString,
+      max: Number.isFinite(max) && max > 0 ? max : 10,
+      ...(needsSsl(connectionString)
+        ? { ssl: { rejectUnauthorized: false } }
+        : {}),
+    });
   }
   return _pool;
 }
