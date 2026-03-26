@@ -34,10 +34,10 @@ router.get("/", async (req, res) => {
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(offersTable.createdAt);
 
-    res.json(rows);
+    return res.json(rows);
   } catch (err) {
     req.log.error({ err }, "Failed to list offers");
-    res.status(500).json({ error: "Failed to list offers" });
+    return res.status(500).json({ error: "Failed to list offers" });
   }
 });
 
@@ -60,10 +60,10 @@ router.post("/:id/redeem", async (req, res) => {
       .from(brandsTable)
       .where(eq(brandsTable.id, updated.brandId));
 
-    res.json({ ...updated, brandName: brand?.name ?? null });
+    return res.json({ ...updated, brandName: brand?.name ?? null });
   } catch (err) {
     req.log.error({ err }, "Failed to redeem offer");
-    res.status(400).json({ error: "Failed to redeem offer" });
+    return res.status(400).json({ error: "Failed to redeem offer" });
   }
 });
 

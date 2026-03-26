@@ -7,13 +7,14 @@ import {
   offersTable,
 } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
-import { openai } from "@workspace/integrations-openai-ai-server";
 import { GenerateOffersBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
 router.post("/generate-offers", async (req, res) => {
   try {
+    const { openai } = await import("@workspace/integrations-openai-ai-server");
+
     const { customerId } = GenerateOffersBody.parse(req.body);
 
     const [customer] = await db
@@ -186,10 +187,10 @@ The aiReason field should explain in 1 sentence (not addressed to the customer) 
       });
     }
 
-    res.json({ offers: insertedOffers, summary: parsed.summary });
+    return res.json({ offers: insertedOffers, summary: parsed.summary });
   } catch (err) {
     req.log.error({ err }, "Failed to generate offers");
-    res.status(500).json({ error: "Failed to generate offers" });
+    return res.status(500).json({ error: "Failed to generate offers" });
   }
 });
 
@@ -247,7 +248,7 @@ router.get("/analytics", async (req, res) => {
     const generated = Number(totalOffers?.count ?? 0);
     const redeemed = Number(redeemedOffers?.count ?? 0);
 
-    res.json({
+    return res.json({
       totalCustomers: Number(customerCount?.count ?? 0),
       totalTransactions: Number(txCount?.count ?? 0),
       totalPointsIssued: Number(pointsTotal?.total ?? 0),
@@ -265,7 +266,7 @@ router.get("/analytics", async (req, res) => {
     });
   } catch (err) {
     req.log.error({ err }, "Failed to get analytics");
-    res.status(500).json({ error: "Failed to get analytics" });
+    return res.status(500).json({ error: "Failed to get analytics" });
   }
 });
 

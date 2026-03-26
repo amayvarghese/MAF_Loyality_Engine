@@ -12,10 +12,10 @@ const router: IRouter = Router();
 router.get("/", async (req, res) => {
   try {
     const customers = await db.select().from(customersTable).orderBy(customersTable.joinedAt);
-    res.json(customers);
+    return res.json(customers);
   } catch (err) {
     req.log.error({ err }, "Failed to list customers");
-    res.status(500).json({ error: "Failed to list customers" });
+    return res.status(500).json({ error: "Failed to list customers" });
   }
 });
 
@@ -26,10 +26,10 @@ router.post("/", async (req, res) => {
       .insert(customersTable)
       .values({ ...body, tier: body.tier ?? "silver" })
       .returning();
-    res.status(201).json(customer);
+    return res.status(201).json(customer);
   } catch (err) {
     req.log.error({ err }, "Failed to create customer");
-    res.status(400).json({ error: "Failed to create customer" });
+    return res.status(400).json({ error: "Failed to create customer" });
   }
 });
 
@@ -94,7 +94,7 @@ router.get("/:id", async (req, res) => {
       .where(eq(transactionsTable.customerId, id))
       .groupBy(transactionsTable.brandId, brandsTable.name);
 
-    res.json({
+    return res.json({
       ...customer,
       transactions,
       offers,
@@ -102,7 +102,7 @@ router.get("/:id", async (req, res) => {
     });
   } catch (err) {
     req.log.error({ err }, "Failed to get customer");
-    res.status(500).json({ error: "Failed to get customer" });
+    return res.status(500).json({ error: "Failed to get customer" });
   }
 });
 
