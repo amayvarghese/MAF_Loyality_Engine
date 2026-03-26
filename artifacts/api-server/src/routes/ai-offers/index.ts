@@ -44,15 +44,38 @@ router.post("/generate-offers", async (req, res) => {
     const visitedBrandIds = new Set(brandSpend.map((b) => b.brandId));
     const unvisitedBrands = brands.filter((b) => !visitedBrandIds.has(b.id));
 
-    const systemPrompt = `You are the AI engine for the Majid Al Futtaim SHARE loyalty program, one of the Middle East's most prestigious retail loyalty platforms. Your role is to generate hyper-personalized weekly offers that:
-1. Reward customers for their existing brand loyalty
-2. Cross-sell to MAF brands they haven't yet visited
-3. Match the customer's tier and spending patterns
-4. Create compelling reasons to shop across the MAF ecosystem
+    const firstName = customer.name.split(" ")[0];
+    const now = new Date();
+    const dayOfWeek = now.toLocaleDateString("en-AE", { weekday: "long" });
+    const dateStr = now.toLocaleDateString("en-AE", { day: "numeric", month: "long" });
+
+    const uaeEvents = [
+      "UAE National Day is coming up",
+      "Eid holidays are approaching",
+      "Dubai Shopping Festival is on",
+      "Dubai Summer Surprises is happening",
+      "the weekend is almost here",
+      "it's a long weekend coming up",
+      "school is back in season",
+      "the weather is finally cooling down",
+    ];
+    const randomEvent = uaeEvents[Math.floor(Math.random() * uaeEvents.length)];
+
+    const systemPrompt = `You are the personal shopping intelligence behind the Majid Al Futtaim SHARE loyalty program. You write offers that sound like they're from a brilliant friend who knows the customer personally — warm, direct, and genuinely useful. Not corporate. Not generic.
+
+Writing rules for titles and descriptions:
+- Always address the customer by their first name ("${firstName}") in the title, like a text message from a friend
+- Titles should be short, punchy hooks — a question, observation or nudge. Example: "Hey ${firstName} — Friday grocery run incoming?" or "${firstName}, Dune 3 drops this weekend 🎬"
+- Descriptions complete the offer naturally in 1–2 sentences. Weave in the actual offer details conversationally. Reference real timing (the weekend, Friday, today, ${dateStr}), cross-brand storytelling, or current events where it fits naturally
+- Cross-brand offers should feel like natural extensions: "Since you love Carrefour, grab popcorn and catch a movie at VOX on us"
+- Tone: like a savvy friend who works in retail — helpful, a little cheeky, never pushy
+- Never use corporate buzzwords like "elevate", "exclusive", "curated", "indulge", "bespoke", "tailor-made"
+- Discounts for loyalty brands: 10–25%. For new brands: 15–30% to entice trial
+- Points bonus should scale with tier: silver 200–500, gold 500–1000, platinum 1000–2000, diamond 2000–5000
 
 MAF Brands available: ${brands.map((b) => `${b.name} (${b.category})`).join(", ")}
 
-Always respond with valid JSON matching this exact structure:
+Respond ONLY with valid JSON in this exact shape:
 {
   "offers": [
     {
@@ -65,37 +88,39 @@ Always respond with valid JSON matching this exact structure:
     }
   ],
   "summary": string
-}`;
+}
 
-    const userPrompt = `Generate 4 personalized weekly offers for this customer:
+The summary should be 1 friendly sentence addressed to ${firstName} explaining the theme of this week's picks.`;
 
-Customer Profile:
-- Name: ${customer.name}
-- Loyalty Tier: ${customer.tier.toUpperCase()}
-- Total Points: ${customer.totalPoints.toLocaleString()}
+    const userPrompt = `Today is ${dayOfWeek}, ${dateStr}. Context: ${randomEvent}.
 
-Cross-Brand Spending History:
+Generate 4 offers for this customer:
+
+Name: ${firstName} (${customer.name})
+Loyalty Tier: ${customer.tier.toUpperCase()}
+Total Points: ${customer.totalPoints.toLocaleString()}
+
+Their spending history across MAF brands:
 ${
   brandSpend.length > 0
     ? brandSpend
         .map(
           (b) =>
-            `- ${b.brandName} (${b.category}): AED ${Number(b.totalSpend).toFixed(0)} spent, ${b.visitCount} visits`
+            `- ${b.brandName} (${b.category}): AED ${Number(b.totalSpend).toFixed(0)} spent, ${b.visitCount} visit${Number(b.visitCount) !== 1 ? "s" : ""}`
         )
         .join("\n")
-    : "No previous purchases"
+    : "- No previous purchases yet"
 }
 
-Brands Not Yet Visited:
-${unvisitedBrands.map((b) => `- ${b.name} (${b.category})`).join("\n")}
+Brands they haven't tried yet:
+${unvisitedBrands.length > 0 ? unvisitedBrands.map((b) => `- ${b.name} (${b.category})`).join("\n") : "- They've visited all brands"}
 
-Create 4 personalized offers:
-- 2 offers for brands they already love (reward loyalty)
-- 2 offers to introduce them to brands they haven't tried yet
+Craft exactly 4 offers:
+- 2 offers for brands ${firstName} already shops at — make them feel like a reward for being a regular
+- 2 offers to nudge them towards brands they haven't tried, with a compelling cross-brand story or real-world reason to go
 
-Make the offers compelling with realistic discount percentages (5-30%) and bonus points appropriate for their tier (${customer.tier}).
-Each offer should feel personally crafted based on their actual spending behavior.
-The aiReason should explain why this specific offer was chosen for this customer.`;
+The aiReason field should explain in 1 sentence (not addressed to the customer) why the data led you to choose this specific offer for this person.`;
+
 
     const completion = await openai.chat.completions.create({
       model: "gpt-5.2",
