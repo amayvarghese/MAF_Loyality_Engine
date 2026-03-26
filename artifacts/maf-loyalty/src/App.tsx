@@ -8,6 +8,7 @@ import Customers from "@/pages/Customers";
 import CustomerDetail from "@/pages/CustomerDetail";
 import Offers from "@/pages/Offers";
 import Brands from "@/pages/Brands";
+import BrandDetail from "@/pages/BrandDetail";
 import Insights from "@/pages/Insights";
 import NotFound from "@/pages/not-found";
 
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/customers/:id" component={CustomerDetail} />
       <Route path="/offers" component={Offers} />
       <Route path="/brands" component={Brands} />
+      <Route path="/brands/:id" component={BrandDetail} />
       <Route path="/insights" component={Insights} />
       <Route component={NotFound} />
     </Switch>

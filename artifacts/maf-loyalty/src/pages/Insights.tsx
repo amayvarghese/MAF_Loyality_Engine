@@ -65,7 +65,7 @@ export default function Insights() {
                 <div className="p-3 bg-primary/10 rounded-2xl"><Zap className="w-6 h-6 text-primary"/></div>
               </div>
               <p className="text-muted-foreground text-sm font-medium mb-1">AI Conversion Rate</p>
-              <h3 className="text-4xl font-bold text-foreground">{(analytics.weeklyOfferStats.redemptionRate * 100).toFixed(1)}%</h3>
+              <h3 className="text-4xl font-bold text-foreground">{analytics.weeklyOfferStats.redemptionRate.toFixed(1)}%</h3>
             </CardContent>
           </Card>
         </div>
